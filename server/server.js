@@ -24,6 +24,7 @@ app.use('/api/locations', require('./routes/locations'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/alerts', require('./routes/alerts'));
 app.use('/api/weather', require('./routes/weather'));
+app.use('/api/alerts', require('./routes/alerts'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
