@@ -51,7 +51,7 @@ function App() {
               </Routes>
             </div>
             <footer className="footer">
-              <p>Created with ❤️ by <a href="https://github.com/jaydholariya" target="_blank" rel="noopener noreferrer">Jay Dholariya</a></p>
+              <p>Created with ❤️ by <a href="https://github.com/dholariyajay" target="_blank" rel="noopener noreferrer">Jay Dholariya</a></p>
             </footer>
           </div>
         </Router>
