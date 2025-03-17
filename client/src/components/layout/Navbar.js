@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { WiDaySunny } from 'react-icons/wi';
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useContext(AuthContext);
@@ -12,10 +13,13 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 text-white shadow-md">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold">Weather Dashboard</Link>
+    <nav className="nav-bar">
+      <div className="container">
+        <div className="nav-bar">
+          <Link to="/" className="brand">
+            <WiDaySunny size={32} />
+            <span>WeatherBoard</span>
+          </Link>
           
           <div>
             {isAuthenticated ? (
@@ -23,30 +27,30 @@ const Navbar = () => {
                 <span className="hidden md:inline">
                   Welcome, {user?.username || 'User'}
                 </span>
-                <Link to="/dashboard" className="px-3 py-2 rounded hover:bg-blue-700">
+                <Link to="/dashboard" className="button">
                   Dashboard
                 </Link>
-                <Link to="/settings" className="px-3 py-2 rounded hover:bg-blue-700">
+                <Link to="/settings" className="button">
                   Settings
                 </Link>
                 <button
                   onClick={onLogout}
-                  className="px-3 py-2 rounded hover:bg-blue-700"
+                  className="button"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <div className="space-x-2">
+              <div className="space-x-4">
                 <Link 
                   to="/login" 
-                  className="px-3 py-2 rounded hover:bg-blue-700"
+                  className="button"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register" 
-                  className="px-3 py-2 bg-white text-blue-600 rounded hover:bg-gray-100"
+                  className="button"
                 >
                   Register
                 </Link>

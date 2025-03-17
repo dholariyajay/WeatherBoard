@@ -1,5 +1,5 @@
 import { createContext, useReducer } from 'react';
-import axios from 'axios';
+import { api } from '../utils/axios';
 
 const WeatherContext = createContext();
 
@@ -9,13 +9,15 @@ const weatherReducer = (state, action) => {
       return {
         ...state,
         locations: action.payload,
-        loading: false
+        loading: false,
+        error: null
       };
     case 'ADD_LOCATION':
       return {
         ...state,
         locations: [...state.locations, action.payload],
-        loading: false
+        loading: false,
+        error: null
       };
     case 'DELETE_LOCATION':
       return {
@@ -23,7 +25,8 @@ const weatherReducer = (state, action) => {
         locations: state.locations.filter(
           location => location._id !== action.payload
         ),
-        loading: false
+        loading: false,
+        error: null
       };
     case 'UPDATE_LOCATION':
       return {
@@ -31,36 +34,47 @@ const weatherReducer = (state, action) => {
         locations: state.locations.map(location =>
           location._id === action.payload._id ? action.payload : location
         ),
-        loading: false
+        loading: false,
+        error: null
       };
     case 'SET_CURRENT':
       return {
         ...state,
         current: action.payload,
-        loading: false
+        loading: false,
+        error: null
       };
     case 'GET_WEATHER':
       return {
         ...state,
         weatherData: action.payload,
-        loading: false
+        loading: false,
+        error: null
       };
     case 'GET_FORECAST':
       return {
         ...state,
         forecast: action.payload,
-        loading: false
+        loading: false,
+        error: null
       };
     case 'SET_LOADING':
       return {
         ...state,
-        loading: true
+        loading: true,
+        error: null
       };
     case 'WEATHER_ERROR':
+      console.error('Weather error:', action.payload);
       return {
         ...state,
         error: action.payload,
         loading: false
+      };
+    case 'CLEAR_ERROR':
+      return {
+        ...state,
+        error: null
       };
     default:
       return state;
@@ -83,12 +97,14 @@ const WeatherProvider = ({ children }) => {
   const getLocations = async () => {
     try {
       setLoading();
-      const res = await axios.get('/api/locations');
+      const res = await api.get('/api/locations');
       dispatch({ type: 'GET_LOCATIONS', payload: res.data });
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Error fetching locations';
+      console.error('Error fetching locations:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
     }
   };
@@ -97,25 +113,31 @@ const WeatherProvider = ({ children }) => {
   const addLocation = async location => {
     try {
       setLoading();
-      const res = await axios.post('/api/locations', location);
+      const res = await api.post('/api/locations', location);
       dispatch({ type: 'ADD_LOCATION', payload: res.data });
+      return res.data; // Return the added location
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to add location';
+      console.error('Error adding location:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
+      throw err; // Re-throw to handle in the component
     }
   };
 
   // Delete location
   const deleteLocation = async id => {
     try {
-      await axios.delete(`/api/locations/${id}`);
+      await api.delete(`/api/locations/${id}`);
       dispatch({ type: 'DELETE_LOCATION', payload: id });
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to delete location';
+      console.error('Error deleting location:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
     }
   };
@@ -123,12 +145,14 @@ const WeatherProvider = ({ children }) => {
   // Update location
   const updateLocation = async location => {
     try {
-      const res = await axios.put(`/api/locations/${location._id}`, location);
+      const res = await api.put(`/api/locations/${location._id}`, location);
       dispatch({ type: 'UPDATE_LOCATION', payload: res.data });
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to update location';
+      console.error('Error updating location:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
     }
   };
@@ -142,12 +166,16 @@ const WeatherProvider = ({ children }) => {
   const getWeather = async (lat, lon) => {
     try {
       setLoading();
-      const res = await axios.get(`/api/weather/current?lat=${lat}&lon=${lon}`);
+      const res = await api.get(`/api/weather/current`, {
+        params: { lat, lon }
+      });
       dispatch({ type: 'GET_WEATHER', payload: res.data });
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Error fetching weather';
+      console.error('Error fetching weather:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
     }
   };
@@ -156,18 +184,25 @@ const WeatherProvider = ({ children }) => {
   const getForecast = async (lat, lon) => {
     try {
       setLoading();
-      const res = await axios.get(`/api/weather/forecast?lat=${lat}&lon=${lon}`);
+      const res = await api.get(`/api/weather/forecast`, {
+        params: { lat, lon }
+      });
       dispatch({ type: 'GET_FORECAST', payload: res.data });
     } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Error fetching forecast';
+      console.error('Error fetching forecast:', errorMessage);
       dispatch({
         type: 'WEATHER_ERROR',
-        payload: err.response.data.message
+        payload: errorMessage
       });
     }
   };
 
   // Set loading
   const setLoading = () => dispatch({ type: 'SET_LOADING' });
+
+  // Clear error
+  const clearError = () => dispatch({ type: 'CLEAR_ERROR' });
 
   return (
     <WeatherContext.Provider
@@ -184,7 +219,8 @@ const WeatherProvider = ({ children }) => {
         updateLocation,
         setCurrent,
         getWeather,
-        getForecast
+        getForecast,
+        clearError
       }}
     >
       {children}

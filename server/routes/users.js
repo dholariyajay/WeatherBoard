@@ -83,7 +83,11 @@ router.get('/profile', auth, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -102,7 +106,11 @@ router.put('/preferences', auth, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    res.json(user);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json(user);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

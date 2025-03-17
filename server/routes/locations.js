@@ -7,7 +7,11 @@ const auth = require('../middleware/auth');
 router.get('/', auth, async (req, res) => {
   try {
     const locations = await Location.find({ user: req.user.id });
-    res.json(locations);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json(locations);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -25,7 +29,11 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Location not found' });
     }
     
-    res.json(location);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json(location);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -45,7 +53,11 @@ router.post('/', auth, async (req, res) => {
     });
     
     const savedLocation = await newLocation.save();
-    res.status(201).json(savedLocation);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .status(201).json(savedLocation);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -64,7 +76,11 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Location not found' });
     }
     
-    res.json(location);
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json(location);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -82,7 +98,11 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Location not found' });
     }
     
-    res.json({ message: 'Location deleted' });
+    res
+      .setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .setHeader('Pragma', 'no-cache')
+      .setHeader('Expires', '0')
+      .json({ message: 'Location deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

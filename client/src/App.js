@@ -9,18 +9,25 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Settings from './components/pages/Settings';
 import axios from 'axios';
+import './App.css';
 
 // Set base URL for axios
 axios.defaults.baseURL = 'http://localhost:5000';
+
+// If token exists in localStorage, set it in the headers
+const token = localStorage.getItem('token');
+if (token) {
+  axios.defaults.headers.common['x-auth-token'] = token;
+}
 
 function App() {
   return (
     <AuthProvider>
       <WeatherProvider>
         <Router>
-          <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+          <div className="App">
             <Navbar />
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto p-4">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
@@ -43,6 +50,9 @@ function App() {
                 />
               </Routes>
             </div>
+            <footer className="footer">
+              <p>Created with ❤️ by <a href="https://github.com/jaydholariya" target="_blank" rel="noopener noreferrer">Jay Dholariya</a></p>
+            </footer>
           </div>
         </Router>
       </WeatherProvider>
