@@ -1,8 +1,10 @@
 import { useState, useContext, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
 
 const Settings = () => {
+  const location = useLocation();
   const { user, loadUser } = useContext(AuthContext);
   const [preferences, setPreferences] = useState({
     tempUnit: 'celsius',
@@ -14,8 +16,10 @@ const Settings = () => {
   useEffect(() => {
     if (user && user.preferences) {
       setPreferences(user.preferences);
+    } else {
+      loadUser();
     }
-  }, [user]);
+  }, [location, user]);
 
   const onChange = (e) => {
     setPreferences({

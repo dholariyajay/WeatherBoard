@@ -1,81 +1,125 @@
 import { Link } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
+import { WiDaySunny, WiMoonAltWaxingCrescent3, WiCloud, WiRain, WiSnow } from 'react-icons/wi';
 
 const Home = () => {
+  const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
 
+  const heroVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+  };
+
+  const cardVariants = {
+    hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } }
+  };
+
+  const getTimeBasedBackground = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 18) {
+      return 'bg-gradient-to-br from-sky-400 to-blue-500';
+    }
+    return 'bg-gradient-to-br from-indigo-900 to-blue-900';
+  };
+
+  useEffect(() => {
+    // Handle any necessary updates when the route changes
+  }, [location]);
+
   return (
-    <div className="flex flex-col items-center">
-      <div className="max-w-4xl w-full text-center py-12 px-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-          Welcome to the Weather Dashboard
-        </h1>
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-          Get real-time weather updates, save your favorite locations, and track weather conditions all in one place.
-        </p>
-        
-        {!isAuthenticated ? (
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link
-              to="/register"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors w-full sm:w-auto text-center"
-            >
-              Create an Account
-            </Link>
-            <Link
-              to="/login"
-              className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition-colors w-full sm:w-auto text-center"
-            >
-              Login
-            </Link>
-          </div>
-        ) : (
-          <Link
-            to="/dashboard"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
+    <div className={`min-h-screen ${getTimeBasedBackground()} text-white`}>
+      <motion.div
+        className="max-w-7xl mx-auto px-4 py-12"
+        initial="hidden"
+        animate="visible"
+        variants={heroVariants}
+      >
+        <div className="text-center space-y-8">
+          <motion.div
+            className="flex justify-center space-x-4 items-center"
+            whileHover={{ scale: 1.05 }}
           >
-            Go to Dashboard
-          </Link>
-        )}
-      </div>
-      
-      <div className="w-full bg-gray-50 dark:bg-gray-800 py-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-            Features
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-                Real-time Weather
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Get accurate, up-to-date weather information for any location worldwide.
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-                Saved Locations
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Save your favorite locations for quick access to weather conditions.
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-                Weather Alerts
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Set up custom alerts for specific weather conditions in your saved locations.
-              </p>
-            </div>
-          </div>
+            <WiDaySunny className="text-6xl animate-pulse" />
+            <h1 className="text-4xl md:text-6xl font-bold">
+              Welcome to WeatherBoard
+            </h1>
+            <WiMoonAltWaxingCrescent3 className="text-6xl animate-pulse" />
+          </motion.div>
+
+          <p className="text-lg md:text-xl max-w-2xl mx-auto">
+            Your personal weather companion. Stay informed, stay prepared, and enjoy the beauty of weather.
+          </p>
+
+          {!isAuthenticated ? (
+            <motion.div
+              className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8"
+              variants={heroVariants}
+            >
+              <Link
+                to="/register"
+                className="px-8 py-3 bg-white/10 backdrop-blur-sm rounded-lg shadow-lg hover:bg-white/20 transition-all"
+              >
+                Create an Account
+              </Link>
+              <Link
+                to="/login"
+                className="px-8 py-3 bg-white/10 backdrop-blur-sm rounded-lg shadow-lg hover:bg-white/20 transition-all"
+              >
+                Login
+              </Link>
+            </motion.div>
+          ) : (
+            <Link
+              to="/dashboard"
+              className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm rounded-lg shadow-lg hover:bg-white/20 transition-all"
+            >
+              Go to Dashboard
+            </Link>
+          )}
         </div>
-      </div>
+
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            className="bg-white/10 backdrop-blur-sm p-8 rounded-lg space-y-4 cursor-pointer"
+            variants={cardVariants}
+            whileHover="hover"
+          >
+            <WiCloud className="text-6xl" />
+            <h3 className="text-2xl font-bold">Real-time Weather</h3>
+            <p className="text-gray-200">
+              Get accurate, up-to-date weather information for any location worldwide.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white/10 backdrop-blur-sm p-8 rounded-lg space-y-4 cursor-pointer"
+            variants={cardVariants}
+            whileHover="hover"
+          >
+            <WiRain className="text-6xl" />
+            <h3 className="text-2xl font-bold">Saved Locations</h3>
+            <p className="text-gray-200">
+              Save your favorite locations for quick access to weather conditions.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white/10 backdrop-blur-sm p-8 rounded-lg space-y-4 cursor-pointer"
+            variants={cardVariants}
+            whileHover="hover"
+          >
+            <WiSnow className="text-6xl" />
+            <h3 className="text-2xl font-bold">Weather Alerts</h3>
+            <p className="text-gray-200">
+              Set up custom alerts for specific weather conditions in your saved locations.
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 };
